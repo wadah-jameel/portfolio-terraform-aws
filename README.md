@@ -1,6 +1,6 @@
-# Beginner-Friendly Guide: Portfolio Website with Terraform + AWS + GitHub
+# Beginner-Friendly Guide: Portfolio Website Deployment with Terraform + AWS + GitHub
 
-This guide walks you through building and documenting your **portfolio website** hosted on **AWS** using **Terraform** and **GitHub**. No prior experience with Terraform or AWS is required.
+This guide helps you build, document, and **deploy your portfolio website** on **AWS** using **Terraform** and **GitHub Actions** — all beginner-friendly!
 
 ---
 
@@ -8,37 +8,39 @@ This guide walks you through building and documenting your **portfolio website**
 
 We will:
 
-1. Create a **simple static portfolio website**.
-2. Use **Terraform** to build AWS infrastructure (S3 + CloudFront).
-3. Use **GitHub Actions** to automate deployment.
-4. Document everything beautifully in your GitHub repository.
+1. Build a simple static portfolio site.
+2. Use **Terraform** to create AWS infrastructure (S3 + CloudFront).
+3. Deploy automatically through **GitHub Actions**.
+4. Document it beautifully in your GitHub repo.
 
 ---
 
 ## 🛠️ Step 1: Set Up Your Tools
 
-### You need:
+### You’ll need:
 
 * **GitHub account** → [https://github.com](https://github.com)
 * **AWS account** → [https://aws.amazon.com](https://aws.amazon.com)
 * **Terraform installed** → [Terraform Download](https://developer.hashicorp.com/terraform/downloads)
 * **AWS CLI installed** → [AWS CLI Install](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
-Once installed, configure AWS CLI:
+### Configure AWS CLI
+
+Run this in your terminal:
 
 ```bash
 aws configure
 ```
 
-Enter your AWS access key, secret key, and region (e.g., `us-east-1`).
+Then enter your AWS Access Key, Secret Key, and Region (for example, `us-east-1`).
 
 ---
 
-## 📁 Step 2: Create Your GitHub Repository
+## 📁 Step 2: Create a GitHub Repository
 
-1. Go to GitHub → Click **New Repository** → name it `portfolio-terraform-aws`.
-2. Select **Public** → check **Add a README file**.
-3. Clone it locally:
+1. On GitHub, click **New Repository** → name it `portfolio-terraform-aws`.
+2. Choose **Public** and **Add a README file**.
+3. Clone the repo locally:
 
 ```bash
 git clone https://github.com/yourusername/portfolio-terraform-aws.git
@@ -54,7 +56,7 @@ portfolio-terraform-aws/
 ├── terraform/
 │   ├── main.tf
 │   ├── variables.tf
-│   └── outputs.tf
+│   ├── outputs.tf
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml
@@ -63,9 +65,9 @@ portfolio-terraform-aws/
 
 ---
 
-## 🌐 Step 3: Build Your Website (HTML)
+## 🌐 Step 3: Create Your Website
 
-Create `site/index.html`:
+Inside `site/index.html`, add this:
 
 ```html
 <!DOCTYPE html>
@@ -92,6 +94,8 @@ Create `site/index.html`:
 
 ## ☁️ Step 4: Create Terraform Infrastructure
 
+### 1. Terraform Configuration
+
 Create `terraform/main.tf`:
 
 ```hcl
@@ -110,7 +114,6 @@ provider "aws" {
 
 resource "aws_s3_bucket" "portfolio" {
   bucket = var.bucket_name
-
   website {
     index_document = "index.html"
   }
@@ -133,9 +136,9 @@ resource "aws_s3_bucket_policy" "public_read" {
 
 resource "aws_s3_bucket_public_access_block" "allow_public" {
   bucket = aws_s3_bucket.portfolio.id
-  block_public_acls = false
-  block_public_policy = false
-  ignore_public_acls = false
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
   restrict_public_buckets = false
 }
 
@@ -144,7 +147,9 @@ output "website_endpoint" {
 }
 ```
 
-Create `terraform/variables.tf`:
+### 2. Variables
+
+`terraform/variables.tf`:
 
 ```hcl
 variable "aws_region" {
@@ -157,23 +162,54 @@ variable "bucket_name" {
 }
 ```
 
+### 3. Outputs
+
+`terraform/outputs.tf`:
+
+```hcl
+output "website_endpoint" {
+  description = "URL of the hosted portfolio website"
+  value       = aws_s3_bucket.portfolio.website_endpoint
+}
+```
+
 ---
 
-## 🚀 Step 5: Connect AWS to GitHub
+## 🚀 Step 5: Deploy Infrastructure with Terraform
 
-In your GitHub repo:
+### Option 1: Deploy Locally
 
-1. Go to **Settings → Secrets and variables → Actions → New repository secret**.
-2. Add:
+```bash
+cd terraform
+terraform init
+terraform apply -auto-approve
+```
 
-   * `AWS_ACCESS_KEY_ID`
-   * `AWS_SECRET_ACCESS_KEY`
+Terraform will create your S3 bucket and show your **website endpoint**.
+
+You can then upload your site manually:
+
+```bash
+aws s3 sync ../site/ s3://my-terraform-portfolio-site-12345 --delete
+```
+
+Visit your endpoint to see your site live 🎉
 
 ---
 
 ## ⚙️ Step 6: Automate with GitHub Actions
 
-Create `.github/workflows/deploy.yml`:
+### Add AWS Secrets
+
+In your GitHub repository → **Settings → Secrets and variables → Actions**:
+Add these secrets:
+
+* `AWS_ACCESS_KEY_ID`
+* `AWS_SECRET_ACCESS_KEY`
+
+### Create Workflow
+
+`.github/workflows/deploy.yml`:
 
 ```yaml
 name: Deploy Portfolio Website
@@ -185,8 +221,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Terraform
@@ -194,7 +231,7 @@ jobs:
         with:
           terraform_version: 1.6.0
 
-      - name: Configure AWS credentials
+      - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -207,51 +244,60 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      - name: Get bucket name
-        id: tfoutput
-        working-directory: terraform
-        run: echo "bucket=$(terraform output -raw website_endpoint)" >> $GITHUB_OUTPUT
-
-      - name: Upload site to S3
+      - name: Upload Website to S3
         run: |
-          aws s3 sync site/ s3://$(terraform output -raw bucket_name) --delete
+          aws s3 sync site/ s3://my-terraform-portfolio-site-12345 --delete
 ```
 
 ---
 
-## 🌍 Step 7: Deploy and View Your Site
+## 🌍 Step 7: Deploy via GitHub
 
-1. Commit and push everything:
+1. Push your project to GitHub:
 
-   ```bash
-   git add .
-   git commit -m "Initial commit: Portfolio via Terraform"
-   git push origin main
-   ```
-2. Go to your repo → **Actions** → watch the deployment workflow run.
-3. When it completes, copy the website endpoint from Terraform output.
-4. Visit it in your browser! 🎉
+```bash
+git add .
+git commit -m "Initial portfolio deployment"
+git push origin main
+```
+
+2. Open **Actions** tab → watch the Terraform + AWS deployment.
+3. After it finishes, check the **website endpoint** in the logs.
+4. Open it in your browser — your site is live! 🚀
 
 ---
 
 ## 🧹 Step 8: Clean Up
 
-When testing is done:
+When you’re done testing:
 
 ```bash
 cd terraform
 terraform destroy -auto-approve
 ```
 
----
-
-## 🌟 Step 9: Enhance Your Portfolio
-
-You can add:
-
-* Project cards, images, and links
-* A custom domain (Route53 + CloudFront + ACM for HTTPS)
-* A contact form (AWS Lambda + SES)
+This removes all AWS resources.
 
 ---
 
+## 🌟 Step 9: Improve Your Portfolio
+
+Enhance your site with:
+
+* **Project Cards:** Add details about your work.
+* **Custom Domain:** Use Route53 + CloudFront + ACM for HTTPS.
+* **Contact Form:** AWS Lambda + SES.
+* **Professional README:** Add screenshots and badges.
+
+---
+
+## ✅ Summary
+
+You’ve successfully **deployed a portfolio website** using **Terraform + AWS** — automated through **GitHub Actions**.
+
+This project demonstrates your understanding of:
+
+* Infrastructure as Code (IaC)
+* AWS S3 static hosting
+* CI/CD automation via GitHub Actions
+* Cloud deployment fundamentals
