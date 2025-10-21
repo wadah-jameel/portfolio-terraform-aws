@@ -255,6 +255,3 @@ You can add:
 
 ---
 
-## ✅ Summary
-
-You’ve now built and documented a cloud-hosted **Terraform + AWS** portfolio website! Your GitHub repo serves as both your **portfolio** and **proof of your DevOps skills**.
