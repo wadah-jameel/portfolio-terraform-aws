@@ -291,6 +291,21 @@ Enhance your site with:
 
 ---
 
+
+## 📸 Deployment Screenshots
+
+### 1. Terraform Apply
+![Terraform Apply Output](screenshots/terraform-apply-1.jpg)
+![Terraform Apply Output](screenshots/terraform-apply-2.jpg)
+![Terraform Apply Output](screenshots/terraform-apply-3.jpg)
+
+### 2. AWS S3 Bucket
+![S3 Bucket](screenshots/aws_s3-bucket.jpg)
+
+### 3. Live Portfolio Website
+![Portfolio Website](screenshots/website-preview.jpg)
+
+
 ## ✅ Summary
 
 You’ve successfully **deployed a portfolio website** using **Terraform + AWS** — automated through **GitHub Actions**.
@@ -301,3 +316,5 @@ This project demonstrates your understanding of:
 * AWS S3 static hosting
 * CI/CD automation via GitHub Actions
 * Cloud deployment fundamentals
+
+
