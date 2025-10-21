@@ -295,15 +295,15 @@ Enhance your site with:
 ## 📸 Deployment Screenshots
 
 ### 1. Terraform Apply
-![Terraform Apply Output](screenshots/terraform-apply-1.jpg)
-![Terraform Apply Output](screenshots/terraform-apply-2.jpg)
-![Terraform Apply Output](screenshots/terraform-apply-3.jpg)
+![Terraform Apply Output](screenshots/terraform_apply_1.jpg.jpg)
+![Terraform Apply Output](screenshots/terraform_apply_2.jpg.jpg)
+![Terraform Apply Output](screenshots/terraform_apply_3.jpg.jpg)
 
 ### 2. AWS S3 Bucket
-![S3 Bucket](screenshots/aws_s3-bucket.jpg)
+![S3 Bucket](screenshots/aws_s3_bucket.jpg)
 
 ### 3. Live Portfolio Website
-![Portfolio Website](screenshots/website-preview.jpg)
+![Portfolio Website](screenshots/website_preview.jpg)
 
 
 ## ✅ Summary
