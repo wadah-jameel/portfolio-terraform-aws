@@ -295,9 +295,9 @@ Enhance your site with:
 ## 📸 Deployment Screenshots
 
 ### 1. Terraform Apply
-![Terraform Apply Output](screenshots/terraform_apply_1.jpg.jpg)
-![Terraform Apply Output](screenshots/terraform_apply_2.jpg.jpg)
-![Terraform Apply Output](screenshots/terraform_apply_3.jpg.jpg)
+![Terraform Apply Output](screenshots/terraform_apply_1.jpg)
+![Terraform Apply Output](screenshots/terraform_apply_2.jpg)
+![Terraform Apply Output](screenshots/terraform_apply_3.jpg)
 
 ### 2. AWS S3 Bucket
 ![S3 Bucket](screenshots/aws_s3_bucket.jpg)
